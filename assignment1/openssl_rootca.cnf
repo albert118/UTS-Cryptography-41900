@@ -1,0 +1,95 @@
+[ ca ]
+default_ca = CA_default
+
+[ CA_default ]
+prompt            = no
+dir               = /home/albert/git/albert/assignment1
+certs             = $dir/certs
+crl_dir           = $dir/crl
+new_certs_dir     = $dir/newcerts
+database          = $dir/index.txt
+serial            = $dir/serial
+RANDFILE          = $dir/private/.rand
+
+# root key and cert
+private_key       = $dir/private/ca.key.pem
+certificate       = $dir/certs/ca.cert.pem
+
+# for cert revocation lists
+crlnumber         = $dir/crlnum
+crl               = $dir/crl/mycrl.pem
+default_crl_days  = 30
+
+default_md          = sha256
+
+# recommended from docs/sample file
+name_opt = ca_default
+cert_opt = ca_default
+
+preserve          = no
+# typicaly this would be used to create intermediate CAs (strict policy)
+# but we're skipping a step here
+policy            = policy
+default_days      = 365
+
+[ policy ]
+stateOrProvinceName     = match
+countryName             = match
+organizationName        = match
+organizationalUnitName  = match
+localityName            = match
+commonName              = supplied
+emailAddress            = supplied
+
+[ req ]
+default_bits        = 2048
+distinguished_name  = req_distinguished_name
+string_mask         = utf8only
+default_md          = sha256
+attributes          = req_attributes
+
+# Extension to add when the -x509 option is used.
+x509_extensions     = v3_ca
+
+[ req_distinguished_name ]
+# See <https://en.wikipedia.org/wiki/Certificate_signing_request>.
+countryName                     = Country Name (2 letter code)
+stateOrProvinceName             = State or Province Name (full name) [Some-State]
+localityName                    = Locality Name (eg, city)
+0.organizationName              = Organization Name (eg, company)
+organizationalUnitName          = Organizational Unit Name (eg, section)
+commonName                      = Common Name (e.g. server FQDN or YOUR name)
+emailAddress                    = Email Address
+
+# specify defaults for this example
+countryName_default                     = AU
+stateOrProvinceName_default             = NSW
+localityName_default                    = SYD
+0.organizationName_default              = UTS
+organizationalUnitName_default          = FEIT
+commonName_default                      = utscrypto.com.au
+emailAddress_default                    = root@utscrypto.com.au
+
+[ req_attributes ]
+challengePassword                       = A challenge password
+challengePassword_min                   = 4
+challengePassword_max                   = 20
+# an optional company name as requested in the assignment details
+unstructuredName                        = An optional company name
+
+[ v3_ca ]
+# Extensions for a typical CA (`man x509v3_config`).
+subjectKeyIdentifier            = hash
+authorityKeyIdentifier          = keyid:always,issuer
+basicConstraints                = critical, CA:true
+keyUsage                        = critical, digitalSignature, cRLSign, keyCertSign
+
+[ server_cert ]
+# Extensions for server certificates (`man x509v3_config`).
+basicConstraints                    = CA:FALSE
+nsCertType                          = server
+nsComment                           = "OpenSSL Generated Server Certificate"
+subjectKeyIdentifier                = hash
+authorityKeyIdentifier              = keyid,issuer:always
+keyUsage                            = critical, digitalSignature, keyEncipherment
+extendedKeyUsage                    = serverAuth
